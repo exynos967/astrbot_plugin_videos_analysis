@@ -275,7 +275,9 @@ class hybird_videos_analysis(Star):
                     match = re.search(r"BV[a-zA-Z0-9]+", url)
                     return match.group(0) if match else None
                 elif "av" in url:
-                    return f"av{match.group(1)}" if match else None
+                    # 兼容 av123456 形式的老视频 ID
+                    match = re.search(r"av(\d+)", url)
+                    return match.group(0) if match else None
                 else:
                     # 短链接，需要后续解析获取真实ID
                     return None
@@ -690,7 +692,7 @@ class hybird_videos_analysis(Star):
             False: 链接未处理过，可以继续
         """
         # 检查防抖开关
-        if not self.debounce_enabled or not self.cache:
+        if not self.debounce_enabled or self.cache is None:
             return False  # 防抖功能关闭
 
         if link in self.cache:
@@ -722,7 +724,7 @@ class hybird_videos_analysis(Star):
             False: 可以继续解析
         """
         # 检查防抖开关
-        if not self.debounce_enabled or not self.cache:
+        if not self.debounce_enabled or self.cache is None:
             return False  # 防抖功能关闭
 
         # 检查是否已在缓存中
